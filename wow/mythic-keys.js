@@ -1,8 +1,8 @@
 // Initialize Cloud Firestore through Firebase
 firebase.initializeApp({
-  apiKey: atob('QUl6YVN5QzdMbzN0WGZpQzl5ckNoNUZ3ZlZCNHBzUjlIMlBQT3Zj'),
-  authDomain: '/',
-  projectId: 'tragicmuffin-cloudapps'
+  apiKey: config.apiKey,
+  authDomain: config.authDomain,
+  projectId: config.projectId
 });
 var db = firebase.firestore();
 
@@ -89,17 +89,28 @@ $(function() {  // Document Ready event
             if ( !$('#submit-key').hasClass("disabled") ) {
                 // Read all fields, send to database, reset all fields, and show success modal/message
 
+
+                $('input[type=checkbox]:not(:checked)').each(function () {
+                  $(this).attr('checked', true).val(0);
+                });
+
+
+
                 //// Firebase DB write
                 var document = {
                     discordname: escapeHtml($('#discordName').val()),
                     charactername: escapeHtml($('#characterName').val()),
-                    characterrole: $('.dd-selected-value').val(),  // 0=none, 1=dps, 2=healer, 3=tank
+                    characterrole1:  escapeHtml($('#characterRole1').val()),  // 0=none, 1=dps, 2=healer, 3=tank
+                    characterrole2:  escapeHtml($('#characterRole2').val()),
+                    characterrole3:  escapeHtml($('#characterRole3').val()),
                     dungeonname: escapeHtml($('#keyDungeon').val()),
                     keylevel: escapeHtml($('#keyLevel').val()),
                     datetimeadded: firebase.firestore.Timestamp.fromDate(new Date()),
                     availability: escapeHtml($('#availability').val()),
                     clientID: getOrGenerateClientID(),
                 };
+
+
 
                 db.collection("TMA-Mythic-Keys").add(document)
                 .then(function(docRef) {  // on success
@@ -112,6 +123,10 @@ $(function() {  // Document Ready event
 
                     // Show submission alert message
                     $('#keyform').append('<div class="alert alert-success alert-dismissible fade show" role="alert">Key submitted successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+
+                    $('input[type=checkbox]:checked').each(function () {
+                      $(this).attr('checked', false).val(0);
+                    });
 
                 })
                 .catch(function(error) {  // on failure
@@ -155,12 +170,12 @@ function generateKeyListTable() {
             }
 
 
-            var fieldnames = ['discordname', 'charactername', 'characterrole', 'dungeonname', 'keylevel', 'availability', 'datetimeadded'];
+            var fieldnames = ['discordname', 'charactername', 'characterrole1', 'characterrole2', 'characterrole3', 'dungeonname', 'keylevel', 'availability', 'datetimeadded'];
             var rolevalues = {'0': 'img/rolesymbols-empty-icon.png',
-                              '1': 'img/rolesymbols-dps-icon.png',
+                              '1': 'img/rolesymbols-tank-icon.png',
                               '2': 'img/rolesymbols-healer-icon.png',
-                              '3': 'img/rolesymbols-tank-icon.png'};  // img locations for role icon lookup
-            var roletitles = {'0': 'None', '1': 'DPS', '2': 'Healer', '3': 'Tank'};
+                              '3': 'img/rolesymbols-dps-icon.png'};  // img locations for role icon lookup
+            var roletitles = {'0': 'None', '1': 'Tank', '2': 'Healer', '3': 'DPS'};
 
             // Collect all document fields in an object
             doc_fields = {};
@@ -181,7 +196,9 @@ function generateKeyListTable() {
             tableRow += '<td scope="col">'
                 + escapeHtml( doc_fields['discordname'] ).slice(0, 40)  // Discord Name
                 + '&nbsp;&nbsp;&nbsp;&nbsp;<small><em>' + escapeHtml( doc_fields['charactername'] ).slice(0, 40) + '</em></small>'  // Character Name
-                + '<div style="float:right;"><img src="' + rolevalues[doc_fields['characterrole']] + '" title="' + roletitles[doc_fields['characterrole']] + '"></div>'  // Role Icon
+                + '<div style="float:right;"><img src="' + rolevalues[doc_fields['characterrole3']] + '" title="' + roletitles[doc_fields['characterrole3']] + '"></div>'
+                + '<div style="float:right;"><img src="' + rolevalues[doc_fields['characterrole2']] + '" title="' + roletitles[doc_fields['characterrole2']] + '"></div>'
+                + '<div style="float:right;"><img src="' + rolevalues[doc_fields['characterrole1']] + '" title="' + roletitles[doc_fields['characterrole1']] + '"></div>'  // Role Icon
                 + '</td>';
 
             //// Column 2: Dungeon Name ////
