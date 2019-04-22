@@ -1,264 +1,261 @@
 <html>
 
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TODO: Make "Key submitted successfully" message auto-fade after a few seconds.
-  TODO: Add a tooltip (or just alt text?) to availability to show time of creation
+TODO: Make "Key submitted successfully" message auto-fade after a few seconds.
+TODO: Add a tooltip (or just alt text?) to availability to show time of creation
 
-  BUG: Find a way to fix graphical glitch when table is redrawn (unsorted table is momentarily shown before table is sorted)
+BUG: Find a way to fix graphical glitch when table is redrawn (unsorted table is momentarily shown before table is sorted)
 
-  IDEA: Have Jeeves keep a JSON list of discord usernames/mentions. Add JS to get this file from server and use it to auto-complete (find package) name entry.
+IDEA: Have Jeeves keep a JSON list of discord usernames/mentions. Add JS to get this file from server and use it to auto-complete (find package) name entry.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 <head>
 	<title>Mythic+ Keys</title>
-    <meta name="author" content="Jesse Williams">
-    <meta name="version" content="1.0">
+	<meta name="author" content="Jesse Williams">
+	<meta name="version" content="1.0">
 	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/png" href="img/tmaicon.png"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" type="image/png" href="img/tmaicon.png"/>
 
 	<!-- Bootstrap - CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <!-- jQuery UI - CSS -->
+	<!-- jQuery UI - CSS -->
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- jQuery -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-    <!-- jQuery UI -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <!-- jQuery Mousewheel Plugin -->
+	<!-- jQuery UI -->
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<!-- jQuery Mousewheel Plugin -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
 
-    <!-- jQueryUI + Bootstrap patch -->
-    <script type="text/javascript">
-        $.widget.bridge('uitooltip', $.ui.tooltip);
-        $.widget.bridge('uibutton', $.ui.button);
-    </script>
+	<!-- jQueryUI + Bootstrap patch -->
+	<script type="text/javascript">
+	$.widget.bridge('uitooltip', $.ui.tooltip);
+	$.widget.bridge('uibutton', $.ui.button);
+	</script>
 
-    <!-- Popper.js -->
+	<!-- Popper.js -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 
-    <!-- Bootstrap - JavaScript -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<!-- Bootstrap - JavaScript -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
-    <!-- Firebase & Cloud Firestore DB libraries -->
-    <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase-firestore.js"></script>
+	<!-- Firebase & Cloud Firestore DB libraries -->
+	<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase-firestore.js"></script>
 
-    <!-- ddSlick Dropdown Box Image Plugin (for Roles dropdown) -->
-    <script src="https://cdn.rawgit.com/prashantchaudhary/ddslick/master/jquery.ddslick.min.js"></script>
+	<!-- ddSlick Dropdown Box Image Plugin (for Roles dropdown) -->
+	<script src="https://cdn.rawgit.com/prashantchaudhary/ddslick/master/jquery.ddslick.min.js"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/wow.css">
-    <link rel="stylesheet" href="css/mythic-keys.css">
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/wow.css">
+	<link rel="stylesheet" href="css/mythic-keys.css">
 
-		<script type='text/javascript' src='config.js'></script>
+	<script type='text/javascript' src='config.js'></script>
 
 
-    <!-- Custom JS -->
-    <script type="text/javascript" src="mythic-keys.js"></script>
+	<!-- Custom JS -->
+	<script type="text/javascript" src="mythic-keys.js"></script>
 </head>
 
 
 <!-- Initialization Script -->
 <body onload="init();" style="padding-bottom: 4rem; min-width: 425px;">
 
-<script type="text/javascript">
-    function init() {
-        $('input[id="keyLevel"]').val("1");
+	<script type="text/javascript">
+	function init() {
+		$('input[id="keyLevel"]').val("1");
 
-        $('#nav-content-keyform').hide();
-        //$('#nav-content-schedule').hide();
+		$('#nav-content-keyform').hide();
+		//$('#nav-content-schedule').hide();
 
 
-        // Load 'Show My Keys' option from cookie.
-        if (loadOption_showMyKeys() == 'None') {
-            // If no cookie exists, set checkbox to default state (checked)
-            $('#show-own-keys-toggle').prop('checked', true);
-        }
-        else {
-            // If a cookie exists, set checkbox state to match (generateKeyListTable function will read from the same cookie later to draw table)
-            $('#show-own-keys-toggle').prop('checked', loadOption_showMyKeys());
-        }
+		// Load 'Show My Keys' option from cookie.
+		if (loadOption_showMyKeys() == 'None') {
+			// If no cookie exists, set checkbox to default state (checked)
+			$('#show-own-keys-toggle').prop('checked', true);
+		}
+		else {
+			// If a cookie exists, set checkbox state to match (generateKeyListTable function will read from the same cookie later to draw table)
+			$('#show-own-keys-toggle').prop('checked', loadOption_showMyKeys());
+		}
 
-        // Check if any keys are expired and delete them.
-        setTimeout(function() {clearExpiredKeys();}, 10000);  // wait 10 seconds before running function to let page load.
+		// Check if any keys are expired and delete them.
+		setTimeout(function() {clearExpiredKeys();}, 10000);  // wait 10 seconds before running function to let page load.
 
-    }
+	}
 </script>
 
 
 <!-- Header -->
 <div class="jumbotron jumbotron-fluid" id="header">
-    <div class="container">
-        <h1 class="display-4" style="text-shadow: 1px 1px 1px #636363;">Hi! Mythic+ Keys</h1>
-    </div>
+	<div class="container">
+		<h1 class="display-4" style="text-shadow: 1px 1px 1px #636363;">Hi! Mythic+ Keys</h1>
+	</div>
 </div>
 
 <!-- Navigation Tabs -->
 <div class="container">
-    <nav>
-        <div class="nav nav-tabs" id="nav-tabs" role="tablist">
-            <a class="nav-item nav-link active border unselectable" id="nav-keylist" data-toggle="tab" role="tab" aria-controls="nav-keylist" aria-selected="true">List of Mythic+ Keys</a>
-            <a class="nav-item nav-link border unselectable" id="nav-keyform" data-toggle="tab" role="tab" aria-controls="nav-keyform" aria-selected="false">Submit a Mythic+ Key</a>
-            <!-- <a class="nav-item nav-link border unselectable" id="nav-schedule" data-toggle="tab" role="tab" aria-controls="nav-schedule" aria-selected="false">Schedule</a> -->
-        </div>
-    </nav>
+	<nav>
+		<div class="nav nav-tabs" id="nav-tabs" role="tablist">
+			<a class="nav-item nav-link active border unselectable" id="nav-keylist" data-toggle="tab" role="tab" aria-controls="nav-keylist" aria-selected="true">List of Mythic+ Keys</a>
+			<a class="nav-item nav-link border unselectable" id="nav-keyform" data-toggle="tab" role="tab" aria-controls="nav-keyform" aria-selected="false">Submit a Mythic+ Key</a>
+			<!-- <a class="nav-item nav-link border unselectable" id="nav-schedule" data-toggle="tab" role="tab" aria-controls="nav-schedule" aria-selected="false">Schedule</a> -->
+		</div>
+	</nav>
 </div>
 
 <!-- Main Content Container -->
 <div class="container border shadow p-3 mb-5 rounded" style="background: #bebf8924;">
 
-    <div id="nav-content-keylist">
+	<div id="nav-content-keylist">
 
-        <div id="keylist-table-div">
-            <!-- Key list table will be created here -->
+		<div id="keylist-table-div">
+			<!-- Key list table will be created here -->
 
-        </div>
+		</div>
 
-        <div class="card" id="keylist-options">
-            <div class="card-body">
-                <input type="checkbox" id="show-own-keys-toggle" class="css-checkbox" onclick="changeOption_showOwnKeys($('#show-own-keys-toggle').prop('checked'));">
-                <label for="show-own-keys-toggle" class="css-checkbox-label">Show My Keys</label>
-            </div>
-        </div>
-        <script type="text/javascript">
-            generateKeyListTable();
-        </script>
+		<div class="card" id="keylist-options">
+			<div class="card-body">
+				<input type="checkbox" id="show-own-keys-toggle" class="css-checkbox" onclick="changeOption_showOwnKeys($('#show-own-keys-toggle').prop('checked'));">
+				<label for="show-own-keys-toggle" class="css-checkbox-label">Show My Keys</label>
+			</div>
+		</div>
+		<script type="text/javascript">
+		generateKeyListTable();
+		</script>
 
-    </div>  <!-- End of Key List -->
+	</div>  <!-- End of Key List -->
 
-    <!-- Key Submission Form -->
-    <div id="nav-content-keyform">
-        <form id="keyform">
+	<!-- Key Submission Form -->
+	<div id="nav-content-keyform">
+		<form id="keyform">
 
-            <div class="row"> <!-- Form Row: Discord Name, Character Name, Role -->
+			<div class="row"> <!-- Form Row: Discord Name, Character Name, Role -->
 
-                <div class="col-md">
-                    <div class="form-group">
-                        <label for="discordName">Discord Name&nbsp;<small><em>(or whatever name you go by)</em></small></label>
-                        <input type="text" class="form-control required empty" id="discordName" aria-describedby="discordName-help" placeholder="(Required)">
-                        <!-- <small id="discordName-help" class="form-text text-muted">Enter your name on Discord.</small> -->
-                    </div>
-                </div>
+				<div class="col-md">
+					<div class="form-group">
+						<label for="discordName">Discord Name&nbsp;<small><em>(or whatever name you go by)</em></small></label>
+						<input type="text" class="form-control required empty" id="discordName" aria-describedby="discordName-help" placeholder="(Required)">
+						<!-- <small id="discordName-help" class="form-text text-muted">Enter your name on Discord.</small> -->
+					</div>
+				</div>
 
-                <div class="col-5">
-                    <div class="form-group">
-                        <label for="characterName">Character Name</label>
-                        <input type="text" class="form-control" id="characterName" aria-describedby="characterName-help" placeholder="(Optional)">
-                        <!-- <small id="characterName-help" class="form-text text-muted">[Extra description text...]</small> -->
-                    </div>
-                </div>
-
-
-								<!-- <div class="col-md">
-									<div class="form-group">
+				<div class="col-5">
+					<div class="form-group">
+						<label for="characterName">Character Name</label>
+						<input type="text" class="form-control" id="characterName" aria-describedby="characterName-help" placeholder="(Optional)">
+						<!-- <small id="characterName-help" class="form-text text-muted">[Extra description text...]</small> -->
+					</div>
+				</div>
 
 
-									</div>
+				<!-- <div class="col-md">
+				<div class="form-group">
 
 
-								</div> -->
+			</div>
 
-								<div class="form-check form-check-inline">
-									 <!-- <input class="form-check-input" type="hidden" id="characterRole1" value="0"> -->
-								  <input class="form-check-input" type="checkbox" id="characterRole1" value="1">
-								  <label class="form-check-label" for="characterRole1"><img src="img/rolesymbols-tank-sm.png"></label>
 
- <!-- <input class="form-check-input" type="hidden" id="characterRole2" value="0"> -->
-								  <input class="form-check-input" type="checkbox" id="characterRole2" value="2">
-								  <label class="form-check-label" for="characterRole2"><img src="img/rolesymbols-healer-sm.png"></label>
+		</div> -->
 
- <!-- <input class="form-check-input" type="hidden" id="characterRole3" value="0"> -->
-								  <input class="form-check-input" type="checkbox" id="characterRole3" value="3">
-								  <label class="form-check-label" for="characterRole3"><img src="img/rolesymbols-dps-sm.png"></label>
-								</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" type="checkbox" id="characterRole1" value="1">
+			<label class="form-check-label" for="characterRole1"><img src="img/rolesymbols-tank-sm.png"></label>
+
+			<input class="form-check-input" type="checkbox" id="characterRole2" value="2">
+			<label class="form-check-label" for="characterRole2"><img src="img/rolesymbols-healer-sm.png"></label>
+
+			<input class="form-check-input" type="checkbox" id="characterRole3" value="3">
+			<label class="form-check-label" for="characterRole3"><img src="img/rolesymbols-dps-sm.png"></label>
+		</div>
 
 
 
-                <!-- <div class="col-2">
-                    <div class="form-group">
-                            <label for="characterRole" style="line-height: 0em; margin: 0.6em 0em 0em 0.4em;">Role</label>
-                            <div id="characterRole"></div>
+		<!-- <div class="col-2">
+		<div class="form-group">
+		<label for="characterRole" style="line-height: 0em; margin: 0.6em 0em 0em 0.4em;">Role</label>
+		<div id="characterRole"></div>
 
-                            <script type="text/javascript">
-                                // Create dropdown data
-                                var ddData = [
-                                    { text: "", value: 0, selected: true, description: "", imageSrc: "img/rolesymbols-empty-sm.png" },
-                                    { text: "", value: 1, selected: false, description: "", imageSrc: "img/rolesymbols-dps-sm.png" },
-                                    { text: "", value: 2, selected: false, description: "", imageSrc: "img/rolesymbols-healer-sm.png" },
-                                    { text: "", value: 3, selected: false, description: "", imageSrc: "img/rolesymbols-tank-sm.png" },
-                                ];
-                                // Attach ddSlick plugin
-                                // Value of selected role will be is "value" attribute of hidden input field ".dd-selected-value"
-                                $('#characterRole').ddslick({
-                                    data: ddData, width: 75, selectText: "Role", imagePosition: "left",
-                                    onSelected: function(selectedData){
-                                        // callback function
-                                    }
-                                });
-                            </script>
+		<script type="text/javascript">
+		// Create dropdown data
+		var ddData = [
+		{ text: "", value: 0, selected: true, description: "", imageSrc: "img/rolesymbols-empty-sm.png" },
+		{ text: "", value: 1, selected: false, description: "", imageSrc: "img/rolesymbols-dps-sm.png" },
+		{ text: "", value: 2, selected: false, description: "", imageSrc: "img/rolesymbols-healer-sm.png" },
+		{ text: "", value: 3, selected: false, description: "", imageSrc: "img/rolesymbols-tank-sm.png" },
+		];
+		// Attach ddSlick plugin
+		// Value of selected role will be is "value" attribute of hidden input field ".dd-selected-value"
+		$('#characterRole').ddslick({
+		data: ddData, width: 75, selectText: "Role", imagePosition: "left",
+		onSelected: function(selectedData){
+		// callback function
+	}
+});
+</script>
 
-                    </div>
-                </div> !-->
+</div>
+</div> !-->
 
-            </div>
+</div>
 
-            <div class="row"> <!-- Form Row: Key Dungeon, Key Level -->
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="keyDungeon">Mythic+ Key Dungeon</label>
-                        <select class="form-control" id="keyDungeon">
-                            <option>Atal'Dazar</option>
-                            <option>Freehold</option>
-                            <option>King's Rest</option>
-                            <option>Shrine of the Storm</option>
-                            <option>Siege of Boralus</option>
-                            <option>Temple of Sethraliss</option>
-                            <option>The MOTHERLODE!!!</option>
-                            <option>The Underrot</option>
-                            <option>Tol Dagor</option>
-                            <option>Waycrest Manor</option>
-                        </select>
-                    </div>
-                </div>
+<div class="row"> <!-- Form Row: Key Dungeon, Key Level -->
+	<div class="col-6">
+		<div class="form-group">
+			<label for="keyDungeon">Mythic+ Key Dungeon</label>
+			<select class="form-control" id="keyDungeon">
+				<option>Atal'Dazar</option>
+				<option>Freehold</option>
+				<option>King's Rest</option>
+				<option>Shrine of the Storm</option>
+				<option>Siege of Boralus</option>
+				<option>Temple of Sethraliss</option>
+				<option>The MOTHERLODE!!!</option>
+				<option>The Underrot</option>
+				<option>Tol Dagor</option>
+				<option>Waycrest Manor</option>
+			</select>
+		</div>
+	</div>
 
-                <div class="col-2">
-                    <div class="form-group">
-                        <label for="keyLevel">Mythic+ Key Level</label>
-                        <input type="number" class="form-control required" id="keyLevel" aria-describedby="keyDungeon-help">
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="row"> <!-- Form Row: Availability -->
-                <div class="col-lg">
-                    <label for="availability">Availability</label>
-                    <textarea class="form-control" id="availability" aria-describedby="availability-help" placeholder="(Optional)"></textarea>
-                    <small id="availability-help" class="form-text text-muted">Enter any days & times you are available to run your key.</small>
-                </div>
-            </div>
-
-            <br />
-
-            <div class="row">
-                <div class="col-md">
-                    <button type="button" class="btn btn-lg btn-outline-danger disabled" id="submit-key" disabled="true" style="margin-bottom: 0.5em">Submit Key</button>
-                </div>
-            </div>
-
-        </form>
-    </div>  <!-- End of Key Submission Form -->
+	<div class="col-2">
+		<div class="form-group">
+			<label for="keyLevel">Mythic+ Key Level</label>
+			<input type="number" class="form-control required" id="keyLevel" aria-describedby="keyDungeon-help">
+		</div>
+	</div>
+</div>
 
 
-    <!--
-    <div id="nav-content-schedule">
+<div class="row"> <!-- Form Row: Availability -->
+	<div class="col-lg">
+		<label for="availability">Availability</label>
+		<textarea class="form-control" id="availability" aria-describedby="availability-help" placeholder="(Optional)"></textarea>
+		<small id="availability-help" class="form-text text-muted">Enter any days & times you are available to run your key.</small>
+	</div>
+</div>
 
-        Nothing here yet...
+<br />
 
-    </div>   End of Schedule -->
+<div class="row">
+	<div class="col-md">
+		<button type="button" class="btn btn-lg btn-outline-danger disabled" id="submit-key" disabled="true" style="margin-bottom: 0.5em">Submit Key</button>
+	</div>
+</div>
+
+</form>
+</div>  <!-- End of Key Submission Form -->
+
+
+<!--
+<div id="nav-content-schedule">
+
+Nothing here yet...
+
+</div>   End of Schedule -->
 
 
 </div>  <!-- End of Main Content Container -->
@@ -268,23 +265,23 @@
 
 <!-- Modal : Key Deletion Confirmation -->
 <div class="modal fade" id="modal-keydeletion" tabindex="-1" role="dialog" aria-labelledby="modal-keydeletion-label" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-keydeletion-label">Delete Mythic+ Key</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to delete this key?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-        <button type="button" class="btn btn-success" data-dismiss="modal" id="modal-keydeletion-confirm">Yes</button>
-      </div>
-    </div>
-  </div>
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modal-keydeletion-label">Delete Mythic+ Key</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete this key?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="modal-keydeletion-confirm">Yes</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 

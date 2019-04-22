@@ -89,18 +89,17 @@ $(function() {  // Document Ready event
             if ( !$('#submit-key').hasClass("disabled") ) {
                 // Read all fields, send to database, reset all fields, and show success modal/message
 
-
+                // Assign value of 0 to unchecked roles (seemingly needed for proper parsing)
                 $('input[type=checkbox]:not(:checked)').each(function () {
                   $(this).attr('checked', true).val(0);
                 });
-
 
 
                 //// Firebase DB write
                 var document = {
                     discordname: escapeHtml($('#discordName').val()),
                     charactername: escapeHtml($('#characterName').val()),
-                    characterrole1:  escapeHtml($('#characterRole1').val()),  // 0=none, 1=dps, 2=healer, 3=tank
+                    characterrole1:  escapeHtml($('#characterRole1').val()),  // 1=tank, 2=healer, 3=dps
                     characterrole2:  escapeHtml($('#characterRole2').val()),
                     characterrole3:  escapeHtml($('#characterRole3').val()),
                     dungeonname: escapeHtml($('#keyDungeon').val()),
@@ -124,6 +123,7 @@ $(function() {  // Document Ready event
                     // Show submission alert message
                     $('#keyform').append('<div class="alert alert-success alert-dismissible fade show" role="alert">Key submitted successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
 
+                    // Reset all checkboxes
                     $('input[type=checkbox]:checked').each(function () {
                       $(this).attr('checked', false).val(0);
                     });
